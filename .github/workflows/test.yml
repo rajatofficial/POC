@@ -8,13 +8,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: lots0logs/gh-action-get-changed-files@2.1.4
         id: files_changed
         run: |
             echo "::set-output name=files_changed::$(all)\n"
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
       - uses: ./
         with:
           SLACK_MESSAGE: ${{join(steps.run_tests.outputs.*, '\n')}}
