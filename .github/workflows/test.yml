@@ -9,12 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lots0logs/gh-action-get-changed-files@2.1.4
-        id: files_changed
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         env:
           SLACK_MESSAGE: ${{join(steps.outputs.*, '\n')}}
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v15
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
