@@ -5,7 +5,9 @@ const github = require('@actions/github');
 
 async function run() {
   const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
+  const numberOfFiles = core.getInput('SLACK_MESSAGE');
   console.log('hello world');
+  console.log(numberOfFiles);
   // const TENOR_TOKEN = core.getInput('TENOR_TOKEN') || process.env.TENOR_TOKEN;
   const message = core.getInput('message') || 'Thank you!';
   const searchTerm = core.getInput('searchTerm') || 'thank you';
