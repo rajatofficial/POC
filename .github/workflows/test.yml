@@ -38,9 +38,15 @@ jobs:
     name: Annotates pull request with metadata
     steps:
       - uses: actions/checkout@v2
+      - name: Get Pull Request Number
+        id: pr
+        run: echo "::set-output name=pull_request_number::$(gh pr view --json number -q .number || echo "")"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Annotate PR
         uses: ./
         with:
           owner: ${{ github.repository_owner }}
+          pr_number: ${{ steps.pr.outputs.pull_request_number }}
           repo: ${{ github.event.repository.name }}
           token: ${{ secrets.GITHUB_TOKEN }}
