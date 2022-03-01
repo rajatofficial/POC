@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Annotates pull request with metadata
     steps:
+      - uses: actions/checkout@v2
       - name: Annotate PR
         uses: ./
         with:
