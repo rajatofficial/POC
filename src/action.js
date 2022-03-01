@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const jsonData= require('./students.json');
+const jsonData= require('../moduleOwners.json');
 
 const main = async () => {
   try {

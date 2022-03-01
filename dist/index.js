@@ -2,6 +2,14 @@ module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 1464:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse("{\"basicModule\":{\"owner\":\"Rajat Khurana\",\"ownerId\":\"rajat.khurana@tokopedia.com\",\"confluenceLink\":\"https://tokopedia.atlassian.net/wiki/spaces/PL/pages/1613271778/MVC+widget+Pluggable\"}}");
+
+/***/ }),
+
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -8505,7 +8513,7 @@ function wrappy (fn, cb) {
 
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
-const jsonData= __nccwpck_require__(9298);
+const jsonData= __nccwpck_require__(1464);
 
 const main = async () => {
   try {
@@ -8645,14 +8653,6 @@ const main = async () => {
 
 // Call the main function to run the action
 main();
-
-/***/ }),
-
-/***/ 9298:
-/***/ ((module) => {
-
-module.exports = eval("require")("./students.json");
-
 
 /***/ }),
 
