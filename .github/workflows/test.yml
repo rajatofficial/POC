@@ -28,8 +28,8 @@
 name: PR metadata annotation
 
 on: 
-  pull_request:
-    types: [opened, reopened, synchronize]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
 
