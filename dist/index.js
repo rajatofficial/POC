@@ -4192,126 +4192,6 @@ exports.Deprecation = Deprecation;
 
 /***/ }),
 
-/***/ 2437:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-/* @flow */
-/*::
-
-type DotenvParseOptions = {
-  debug?: boolean
-}
-
-// keys and values from src
-type DotenvParseOutput = { [string]: string }
-
-type DotenvConfigOptions = {
-  path?: string, // path to .env file
-  encoding?: string, // encoding of .env file
-  debug?: string // turn on logging for debugging purposes
-}
-
-type DotenvConfigOutput = {
-  parsed?: DotenvParseOutput,
-  error?: Error
-}
-
-*/
-
-const fs = __nccwpck_require__(5747)
-const path = __nccwpck_require__(5622)
-
-function log (message /*: string */) {
-  console.log(`[dotenv][DEBUG] ${message}`)
-}
-
-const NEWLINE = '\n'
-const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
-const RE_NEWLINES = /\\n/g
-const NEWLINES_MATCH = /\n|\r|\r\n/
-
-// Parses src into an Object
-function parse (src /*: string | Buffer */, options /*: ?DotenvParseOptions */) /*: DotenvParseOutput */ {
-  const debug = Boolean(options && options.debug)
-  const obj = {}
-
-  // convert Buffers before splitting into lines and processing
-  src.toString().split(NEWLINES_MATCH).forEach(function (line, idx) {
-    // matching "KEY' and 'VAL' in 'KEY=VAL'
-    const keyValueArr = line.match(RE_INI_KEY_VAL)
-    // matched?
-    if (keyValueArr != null) {
-      const key = keyValueArr[1]
-      // default undefined or missing values to empty string
-      let val = (keyValueArr[2] || '')
-      const end = val.length - 1
-      const isDoubleQuoted = val[0] === '"' && val[end] === '"'
-      const isSingleQuoted = val[0] === "'" && val[end] === "'"
-
-      // if single or double quoted, remove quotes
-      if (isSingleQuoted || isDoubleQuoted) {
-        val = val.substring(1, end)
-
-        // if double quoted, expand newlines
-        if (isDoubleQuoted) {
-          val = val.replace(RE_NEWLINES, NEWLINE)
-        }
-      } else {
-        // remove surrounding whitespace
-        val = val.trim()
-      }
-
-      obj[key] = val
-    } else if (debug) {
-      log(`did not match key and value when parsing line ${idx + 1}: ${line}`)
-    }
-  })
-
-  return obj
-}
-
-// Populates process.env from .env file
-function config (options /*: ?DotenvConfigOptions */) /*: DotenvConfigOutput */ {
-  let dotenvPath = path.resolve(process.cwd(), '.env')
-  let encoding /*: string */ = 'utf8'
-  let debug = false
-
-  if (options) {
-    if (options.path != null) {
-      dotenvPath = options.path
-    }
-    if (options.encoding != null) {
-      encoding = options.encoding
-    }
-    if (options.debug != null) {
-      debug = true
-    }
-  }
-
-  try {
-    // specifying an encoding returns a string instead of a buffer
-    const parsed = parse(fs.readFileSync(dotenvPath, { encoding }), { debug })
-
-    Object.keys(parsed).forEach(function (key) {
-      if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
-        process.env[key] = parsed[key]
-      } else if (debug) {
-        log(`"${key}" is already defined in \`process.env\` and will not be overwritten`)
-      }
-    })
-
-    return { parsed }
-  } catch (e) {
-    return { error: e }
-  }
-}
-
-module.exports.config = config
-module.exports.parse = parse
-
-
-/***/ }),
-
 /***/ 3287:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -8623,57 +8503,127 @@ function wrappy (fn, cb) {
 /***/ 3348:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
-__nccwpck_require__(2437).config();
-// const fetch = require('node-fetch');
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
-async function run() {
-  const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
-  console.log('hello world');
-  console.log(process.env.SLACK_MESSAGE);
-  // const TENOR_TOKEN = core.getInput('TENOR_TOKEN') || process.env.TENOR_TOKEN;
-  const message = core.getInput('message') || 'Thank you!';
-  const searchTerm = core.getInput('searchTerm') || 'thank you';
+const main = async () => {
+  try {
+    /**
+     * We need to fetch all the inputs that were provided to our action
+     * and store them in variables for us to use.
+     **/
+    const owner = core.getInput('owner', { required: true });
+    const repo = core.getInput('repo', { required: true });
+    const pr_number = core.getInput('pr_number', { required: true });
+    const token = core.getInput('token', { required: true });
 
-  // if ( typeof TENOR_TOKEN !== 'string' ) {
-  //   throw new Error('Invalid TENOR_TOKEN: did you forget to set it in your action config?');
-  // }
+    /**
+     * Now we need to create an instance of Octokit which will use to call
+     * GitHub's REST API endpoints.
+     * We will pass the token as an argument to the constructor. This token
+     * will be used to authenticate our requests.
+     * You can find all the information about how to use Octokit here:
+     * https://octokit.github.io/rest.js/v18
+     **/
+    const octokit = new github.getOctokit(token);
 
-  if ( typeof GITHUB_TOKEN !== 'string' ) {
-    throw new Error('Invalid GITHUB_TOKEN: did you forget to set it in your action config?');
+    /**
+     * We need to fetch the list of files that were changes in the Pull Request
+     * and store them in a variable.
+     * We use octokit.paginate() to automatically loop over all the pages of the
+     * results.
+     * Reference: https://octokit.github.io/rest.js/v18#pulls-list-files
+     */
+    const { data: changedFiles } = await octokit.rest.pulls.listFiles({
+      owner,
+      repo,
+      pull_number: pr_number,
+    });
+
+
+    /**
+     * Contains the sum of all the additions, deletions, and changes
+     * in all the files in the Pull Request.
+     **/
+    let diffData = {
+      additions: 0,
+      deletions: 0,
+      changes: 0
+    };
+
+    // Reference for how to use Array.reduce():
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+    diffData = changedFiles.reduce((acc, file) => {
+      acc.additions += file.additions;
+      acc.deletions += file.deletions;
+      acc.changes += file.changes;
+      return acc;
+    }, diffData);
+
+    /**
+     * Loop over all the files changed in the PR and add labels according 
+     * to files types.
+     **/
+    for (const file of changedFiles) {
+      /**
+       * Add labels according to file types.
+       */
+      const fileExtension = file.filename.split('.').pop();
+      switch(fileExtension) {
+        case 'md':
+          await octokit.rest.issues.addLabels({
+            owner,
+            repo,
+            issue_number: pr_number,
+            labels: ['markdown'],
+          });
+        case 'js':
+          await octokit.rest.issues.addLabels({
+            owner,
+            repo,
+            issue_number: pr_number,
+            labels: ['javascript'],
+          });
+        case 'yml':
+          await octokit.rest.issues.addLabels({
+            owner,
+            repo,
+            issue_number: pr_number,
+            labels: ['yaml'],
+          });
+        case 'yaml':
+          await octokit.rest.issues.addLabels({
+            owner,
+            repo,
+            issue_number: pr_number,
+            labels: ['yaml'],
+          });
+      }
+    }
+
+    /**
+     * Create a comment on the PR with the information we compiled from the
+     * list of changed files.
+     */
+    await octokit.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number: pr_number,
+      body: `
+        Pull Request #${pr_number} has been updated with: \n
+        - ${diffData.changes} changes \n
+        - ${diffData.additions} additions \n
+        - ${diffData.deletions} deletions \n
+      `
+    });
+
+  } catch (error) {
+    core.setFailed(error.message);
   }
-
-  // const randomPos = Math.round(Math.random() * 1000);
-  // const url = `https://api.tenor.com/v1/search?q=${encodeURIComponent(searchTerm)}&pos=${randomPos}&limit=1&media_filter=minimal&contentfilter=high`
-
-  // console.log(`Searching Tenor: ${url}`)
-
-  // const response = await fetch(`${url}&key=${TENOR_TOKEN}`);
-  // const { results } = await response.json();
-  // const gifUrl = results[0].media[0].tinygif.url;
-
-  // console.log(`Found gif from Tenor: ${gifUrl}`);
-
-  const { context = {} } = github;
-  const { pull_request } = context.payload;
-
-  if ( !pull_request ) {
-    throw new Error('Could not find pull request!')
-  };
-
-  console.log(`Found pull request: ${pull_request.number}`);
-
-  const octokit = github.getOctokit(GITHUB_TOKEN)
-
-  await octokit.issues.createComment({
-    ...context.repo,
-    issue_number: pull_request.number,
-    body: `${message}\n" />`
-  });
 }
 
-run().catch(e => core.setFailed(e.message));
+// Call the main function to run the action
+main();
 
 /***/ }),
 
