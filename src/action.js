@@ -124,8 +124,8 @@ const main = async () => {
       issue_number: pr_number,
       body: `
         ${extensionFileRuleMsg}
-        Owner: ${jsonData.basicModule.owner} ${jsonData.basicModule.ownerId}
-        Documentation Link: ${jsonData.basicModule.confluenceLink}
+        Owner: ${jsonData.basicModule.owner} ${jsonData.basicModule.ownerId} \n
+        Documentation Link: ${jsonData.basicModule.confluenceLink} \n
         Pull Request #${pr_number} has been updated with: \n
         - ${diffData.changes} changes \n
         - ${diffData.additions} additions \n
