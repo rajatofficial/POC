@@ -1,26 +1,46 @@
-name: Test
+# name: Test
 
-on:
+# on:
+#   pull_request:
+#     types: [opened]
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Get changed files
+#         id: changed-files
+#         uses: tj-actions/changed-files@v15
+#       - name: List all changed files
+#         env:
+#           Files_Changed: ${{ steps.changed-files.outputs.all_changed_files }}
+#         run: |
+#           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+#             echo "$file was changed"
+#           done
+#       - uses: ./
+#         with:
+#           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#         env:
+#           SLACK_MESSAGE:  ${{ steps.changed-files.outputs.all_changed_files }}
+
+name: PR metadata annotation
+
+on: 
   pull_request:
-    types: [opened]
+    types: [opened, reopened, synchronize]
 
 jobs:
-  test:
+
+  annotate-pr:
     runs-on: ubuntu-latest
+    name: Annotates pull request with metadata
     steps:
-      - uses: actions/checkout@v2
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v15
-      - name: List all changed files
-        env:
-          Files_Changed: ${{ steps.changed-files.outputs.all_changed_files }}
-        run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-          done
-      - uses: ./
+      - name: Annotate PR
+        uses: link-/PR-metadata-action@main
         with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        env:
-          SLACK_MESSAGE:  ${{ steps.changed-files.outputs.all_changed_files }}
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+          pr_number: ${{ github.event.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
