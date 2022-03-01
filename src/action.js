@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const jsonData= require('./students.json');
 
 const main = async () => {
   try {
@@ -59,42 +60,59 @@ const main = async () => {
      * Loop over all the files changed in the PR and add labels according 
      * to files types.
      **/
-    for (const file of changedFiles) {
-      /**
-       * Add labels according to file types.
-       */
-      const fileExtension = file.filename.split('.').pop();
-      switch(fileExtension) {
-        case 'md':
-          await octokit.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: pr_number,
-            labels: ['markdown'],
-          });
-        case 'js':
-          await octokit.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: pr_number,
-            labels: ['javascript'],
-          });
-        case 'yml':
-          await octokit.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: pr_number,
-            labels: ['yaml'],
-          });
-        case 'yaml':
-          await octokit.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: pr_number,
-            labels: ['yaml'],
-          });
-      }
-    }
+    const filesCountPerExtension = {js: 0, css: 0};
+    const extensionFileRuleMsg = "";
+     for (const file of changedFiles) {
+        const fileExtension = file.filename.split('.').pop();
+        if(fileExtension === "js") {
+          filesCountPerExtension = {...filesCountPerExtension, js: filesCountPerExtension.js+1 };
+        }
+        if(fileExtension === "css") {
+          filesCountPerExtension = {...filesCountPerExtension, css: filesCountPerExtension.css+1 };
+        }
+        if(fileExtension === "md") {
+          filesCountPerExtension = {...filesCountPerExtension, md: filesCountPerExtension.md+1 };
+        }
+        if(filesCountPerExtension.js > 1) {
+          extensionFileRuleMsg = `As ${filesCountPerExtension.js} number of js files are changed. We will strongly recommend to update the documentation.`
+        }
+     }
+    // for (const file of changedFiles) {
+    //   /**
+    //    * Add labels according to file types.
+    //    */
+    //   const fileExtension = file.filename.split('.').pop();
+    //   switch(fileExtension) {
+    //     case 'md':
+    //       await octokit.rest.issues.addLabels({
+    //         owner,
+    //         repo,
+    //         issue_number: pr_number,
+    //         labels: ['markdown'],
+    //       });
+    //     case 'js':
+    //       await octokit.rest.issues.addLabels({
+    //         owner,
+    //         repo,
+    //         issue_number: pr_number,
+    //         labels: ['javascript'],
+    //       });
+    //     case 'yml':
+    //       await octokit.rest.issues.addLabels({
+    //         owner,
+    //         repo,
+    //         issue_number: pr_number,
+    //         labels: ['yaml'],
+    //       });
+    //     case 'yaml':
+    //       await octokit.rest.issues.addLabels({
+    //         owner,
+    //         repo,
+    //         issue_number: pr_number,
+    //         labels: ['yaml'],
+    //       });
+    //   }
+    // }
 
     /**
      * Create a comment on the PR with the information we compiled from the
@@ -105,6 +123,9 @@ const main = async () => {
       repo,
       issue_number: pr_number,
       body: `
+        ${extensionFileRuleMsg}
+        Owner: ${jsonData.basicModule.owner} ${jsonData.basicModule.ownerId}
+        Documentation Link: ${jsonData.basicModule.confluenceLink}
         Pull Request #${pr_number} has been updated with: \n
         - ${diffData.changes} changes \n
         - ${diffData.additions} additions \n
