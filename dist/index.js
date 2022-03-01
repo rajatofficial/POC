@@ -8573,8 +8573,8 @@ const main = async () => {
      * Loop over all the files changed in the PR and add labels according 
      * to files types.
      **/
-    const filesCountPerExtension = {js: 0, css: 0};
-    const extensionFileRuleMsg = "";
+    let filesCountPerExtension = {js: 0, css: 0};
+    let extensionFileRuleMsg = "";
      for (const file of changedFiles) {
         const fileExtension = file.filename.split('.').pop();
         if(fileExtension === "js") {
