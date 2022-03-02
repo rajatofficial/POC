@@ -6,7 +6,7 @@ module.exports =
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse("{\"basicModule\":{\"owner\":\"Rajat Khurana\",\"ownerId\":\"rajat.khurana@tokopedia.com\",\"confluenceLink\":\"https://tokopedia.atlassian.net/wiki/spaces/PL/pages/1613271778/MVC+widget+Pluggable\"}}");
+module.exports = JSON.parse("{\"basicModule\":{\"owner\":\"Rajat Khurana\",\"ownerId\":\"rajatkhuranaofficial@gmail.com\",\"confluenceLink\":\"www.google.com\"}}");
 
 /***/ }),
 
