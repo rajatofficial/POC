@@ -49,13 +49,13 @@ jobs:
   annotate-pr:
     runs-on: ubuntu-latest
     name: Annotates pull request with metadata
-    needs: Test
+    needs: testJob
     steps:
       - uses: actions/checkout@v2
       - name: Annotate PR
         uses: ./
         with:
-          content: ${{ needs.Test.outputs.output1 }}
+          content: ${{ needs.testJob.outputs.output1 }}
           owner: ${{ github.repository_owner }}
           pr_number: ${{ steps.pr.outputs.pull_request_number }}
           repo: ${{ github.event.repository.name }}
