@@ -41,7 +41,7 @@ jobs:
     steps:
       - id: set_var
         run: |
-          content=`cat ./path/to/package.json`
+          content=`cat ./package.json`
           echo "::set-output name=packageJson::$content"
       - run: |
           echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
