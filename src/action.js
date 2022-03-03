@@ -37,7 +37,7 @@ const main = async () => {
       repo,
       pull_number: pr_number,
     });
-
+    console.log('hello');
     console.log({changedFiles});
     /**
      * Contains the sum of all the additions, deletions, and changes
