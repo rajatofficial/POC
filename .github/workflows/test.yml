@@ -41,6 +41,7 @@ jobs:
     outputs:
       output1: ${{steps.set_var.outputs.packageJson}}
     steps:
+      - uses: actions/checkout@v2
       - id: set_var
         run: |
           content=`cat ./package.json`
