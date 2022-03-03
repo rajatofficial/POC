@@ -44,10 +44,10 @@ jobs:
           content=`cat ./package.json`
           echo "::set-output name=packageJson::$content"
       - id: step2
+        outputs:
+          output1: ${{fromJson(steps.set_var.outputs.packageJson).version}}
         run: |
           echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
-      outputs:
-        output1: ${{fromJson(steps.set_var.outputs.packageJson).version}}
 
   annotate-pr:
     runs-on: ubuntu-latest
