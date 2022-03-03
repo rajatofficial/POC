@@ -8523,6 +8523,7 @@ const main = async () => {
      **/
     const owner = core.getInput('owner', { required: true });
     const repo = core.getInput('repo', { required: true });
+    const content = core.getInput('content', { required: true });
     const pr_number = github.context.issue.number;
     const token = core.getInput('token', { required: true });
 
@@ -8636,6 +8637,7 @@ const main = async () => {
       repo,
       issue_number: pr_number,
       body: `
+        Content: ${content}
         ${extensionFileRuleMsg}
         Owner: ${jsonData.basicModule.owner} ${jsonData.basicModule.ownerId} \n
         Documentation Link: ${jsonData.basicModule.confluenceLink} \n
