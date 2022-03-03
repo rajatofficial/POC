@@ -49,7 +49,7 @@ jobs:
   annotate-pr:
     runs-on: ubuntu-latest
     name: Annotates pull request with metadata
-    needs: testJob
+    # needs: testJob
     steps:
       - uses: actions/checkout@v2
       - name: Annotate PR
