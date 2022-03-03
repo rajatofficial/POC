@@ -8562,10 +8562,6 @@ const main = async () => {
       changes: 0
     };
 
-    // const path = 'package.json';
-    // let content = await fs.readFile(path, 'utf8');
-    // content = content.trim();
-
     // Reference for how to use Array.reduce():
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
     diffData = changedFiles.reduce((acc, file) => {
@@ -8642,7 +8638,7 @@ const main = async () => {
       repo,
       issue_number: pr_number,
       body: `
-        Content: ${content}
+        Content: ${String(content)}
         ${extensionFileRuleMsg}
         Owner: ${jsonData.basicModule.owner} ${jsonData.basicModule.ownerId} \n
         Documentation Link: ${jsonData.basicModule.confluenceLink} \n
