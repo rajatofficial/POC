@@ -38,16 +38,13 @@ jobs:
   testJob:
     runs-on: ubuntu-latest
     name: Test
+    outputs:
+      output1: ${{steps.set_var.outputs.packageJson}}
     steps:
       - id: set_var
         run: |
           content=`cat ./package.json`
           echo "::set-output name=packageJson::$content"
-      - id: step2
-        outputs:
-          output1: ${{fromJson(steps.set_var.outputs.packageJson).version}}
-        run: |
-          echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
 
   annotate-pr:
     runs-on: ubuntu-latest
