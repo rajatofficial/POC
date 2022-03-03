@@ -25,25 +25,26 @@
 #         env:
 #           SLACK_MESSAGE:  ${{ steps.changed-files.outputs.all_changed_files }}
 
+  # pull_request_review:
+  #   types: [submitted]
 name: PR metadata annotation
 
 on: 
   pull_request:
     types: [opened, reopened, synchronize]
-  # pull_request_review:
-  #   types: [submitted]
 
 jobs:
 
   testJob:
-    name: Test
     runs-on: ubuntu-latest
+    name: Test
     steps:
       - id: set_var
         run: |
           content=`cat ./package.json`
           echo "::set-output name=packageJson::$content"
-      - run: |
+      - id: step2
+        run: |
           echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
       outputs:
         output1: ${{fromJson(steps.set_var.outputs.packageJson).version}}
