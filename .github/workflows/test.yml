@@ -35,16 +35,16 @@ on:
 
 jobs:
 
-  testJob:
-    runs-on: ubuntu-latest
-    name: Test
-    outputs:
-      output1: ${{steps.set_var.outputs.packageJson}}
-    steps:
-      - id: set_var
-        run: |
-          content=`cat ./package.json`
-          echo "::set-output name=packageJson::$content"
+  # testJob:
+  #   runs-on: ubuntu-latest
+  #   name: Test
+  #   outputs:
+  #     output1: ${{steps.set_var.outputs.packageJson}}
+  #   steps:
+  #     - id: set_var
+  #       run: |
+  #         content=`cat ./package.json`
+  #         echo "::set-output name=packageJson::$content"
 
   annotate-pr:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
       - name: Annotate PR
         uses: ./
         with:
-          content: ${{ needs.testJob.outputs.output1 }}
+          # content: ${{ needs.testJob.outputs.output1 }}
           owner: ${{ github.repository_owner }}
           pr_number: ${{ steps.pr.outputs.pull_request_number }}
           repo: ${{ github.event.repository.name }}

@@ -8523,7 +8523,7 @@ const main = async () => {
      **/
     const owner = core.getInput('owner', { required: true });
     const repo = core.getInput('repo', { required: true });
-    const content = core.getInput('content', { required: true });
+    // const content = core.getInput('content', { required: true });
     const pr_number = github.context.issue.number;
     const token = core.getInput('token', { required: true });
 
@@ -8560,6 +8560,13 @@ const main = async () => {
       deletions: 0,
       changes: 0
     };
+
+    const path = 'package.json';
+    const trim = core.getBooleanInput('trim')
+    let content = await fs.readFile(path, 'utf8')
+    if (trim) {
+      content = content.trim()
+    }
 
     // Reference for how to use Array.reduce():
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
