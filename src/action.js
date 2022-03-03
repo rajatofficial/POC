@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const jsonData= require('../moduleOwners.json');
+const fs = require('fs');
 
 const main = async () => {
   try {

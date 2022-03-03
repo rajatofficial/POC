@@ -8514,6 +8514,7 @@ function wrappy (fn, cb) {
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const jsonData= __nccwpck_require__(1464);
+const fs = __nccwpck_require__(5747);
 
 const main = async () => {
   try {
