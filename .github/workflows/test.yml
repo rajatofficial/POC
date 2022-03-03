@@ -49,11 +49,11 @@ jobs:
   annotate-pr:
     runs-on: ubuntu-latest
     name: Annotates pull request with metadata
+    needs: Test
     steps:
       - uses: actions/checkout@v2
       - name: Annotate PR
         uses: ./
-        needs: Test
         with:
           content: ${{ needs.Test.outputs.output1 }}
           owner: ${{ github.repository_owner }}
