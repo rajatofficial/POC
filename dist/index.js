@@ -8562,11 +8562,8 @@ const main = async () => {
     };
 
     const path = 'package.json';
-    const trim = core.getBooleanInput('trim')
-    let content = await fs.readFile(path, 'utf8')
-    if (trim) {
-      content = content.trim()
-    }
+    let content = await fs.readFile(path, 'utf8');
+    content = content.trim();
 
     // Reference for how to use Array.reduce():
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
