@@ -53,8 +53,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Annotate PR
         uses: ./
+        needs: Test
         with:
-          content: ${{ jobs.Test.outputs.output1 }}
+          content: ${{ needs.Test.outputs.output1 }}
           owner: ${{ github.repository_owner }}
           pr_number: ${{ steps.pr.outputs.pull_request_number }}
           repo: ${{ github.event.repository.name }}
